@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ChevronRight } from 'lucide-react-native';
 import Colors, { spacing, typography } from '@/constants/colors';
 import { genres, seriesData, formatNumber } from '@/mocks/webtoonData';
 import { Image } from 'expo-image';
@@ -18,7 +17,15 @@ export default function GenresScreen() {
   const router = useRouter();
 
   const getSeriesByGenre = (genreId: string) => {
-    return seriesData.filter(s => s.genre.toLowerCase() === genreId.toLowerCase()).slice(0, 3);
+    return seriesData.filter(s => s.genre.toLowerCase() === genreId.toLowerCase());
+  };
+
+  const getGenreCoverImage = (genreId: string) => {
+    const genreSeries = getSeriesByGenre(genreId);
+    if (genreSeries.length > 0) {
+      return genreSeries[0].bannerUrl;
+    }
+    return 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=500&fit=crop';
   };
 
   return (
@@ -35,41 +42,46 @@ export default function GenresScreen() {
         <View style={styles.genreGrid}>
           {genres.map((genre) => {
             const genreSeries = getSeriesByGenre(genre.id);
+            const coverImage = getGenreCoverImage(genre.id);
+            
             return (
               <TouchableOpacity
                 key={genre.id}
                 style={styles.genreCard}
-                activeOpacity={0.7}
+                activeOpacity={0.8}
                 onPress={() => router.push(`/genre/${genre.id}`)}
               >
-                <View style={styles.genreHeader}>
-                  <View style={styles.genreIconContainer}>
-                    <Text style={styles.genreIcon}>{genre.icon}</Text>
-                  </View>
-                  <View style={styles.genreInfo}>
+                <Image
+                  source={{ uri: coverImage }}
+                  style={styles.genreBackground}
+                  contentFit="cover"
+                />
+                <View style={styles.genreOverlay}>
+                  <View style={styles.genreContent}>
+                    <View style={styles.genreIconBadge}>
+                      <Text style={styles.genreIcon}>{genre.icon}</Text>
+                    </View>
                     <Text style={styles.genreName}>{genre.name}</Text>
                     <Text style={styles.genreCount}>{formatNumber(genre.count)} séries</Text>
                   </View>
-                  <ChevronRight size={20} color={Colors.text.secondary} />
+                  
+                  {genreSeries.length > 0 && (
+                    <View style={styles.genrePreview}>
+                      {genreSeries.slice(0, 3).map((series) => (
+                        <View
+                          key={series.id}
+                          style={styles.previewItem}
+                        >
+                          <Image
+                            source={{ uri: series.thumbnailUrl }}
+                            style={styles.previewImage}
+                            contentFit="cover"
+                          />
+                        </View>
+                      ))}
+                    </View>
+                  )}
                 </View>
-                
-                {genreSeries.length > 0 && (
-                  <View style={styles.genrePreview}>
-                    {genreSeries.map((series) => (
-                      <TouchableOpacity
-                        key={series.id}
-                        style={styles.previewItem}
-                        onPress={() => router.push(`/series/${series.id}`)}
-                      >
-                        <Image
-                          source={{ uri: series.thumbnailUrl }}
-                          style={styles.previewImage}
-                          contentFit="cover"
-                        />
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                )}
               </TouchableOpacity>
             );
           })}
@@ -110,48 +122,60 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   genreCard: {
-    backgroundColor: Colors.background.surface,
+    height: 160,
     borderRadius: 12,
+    overflow: 'hidden',
+    marginBottom: spacing.md,
+  },
+  genreBackground: {
+    ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: '100%',
+  },
+  genreOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     padding: spacing.md,
-    marginBottom: spacing.sm,
+    justifyContent: 'space-between',
   },
-  genreHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  genreContent: {
+    flex: 1,
   },
-  genreIconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: Colors.background.main,
+  genreIconBadge: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: spacing.sm,
   },
   genreIcon: {
-    fontSize: 22,
-  },
-  genreInfo: {
-    flex: 1,
-    marginLeft: spacing.md,
+    fontSize: 24,
   },
   genreName: {
-    ...typography.h3Title,
+    ...typography.h2Section,
+    color: Colors.text.white,
+    fontSize: 22,
   },
   genreCount: {
-    ...typography.captionMeta,
-    color: Colors.text.secondary,
-    marginTop: 2,
+    ...typography.bodyRegular,
+    fontSize: 13,
+    color: Colors.text.muted,
+    marginTop: 4,
   },
   genrePreview: {
     flexDirection: 'row',
-    marginTop: spacing.md,
     gap: spacing.sm,
+    alignItems: 'flex-end',
   },
   previewItem: {
-    width: 60,
-    height: 80,
+    width: 45,
+    height: 60,
     borderRadius: 4,
     overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.8)',
   },
   previewImage: {
     width: '100%',

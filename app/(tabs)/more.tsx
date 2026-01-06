@@ -22,16 +22,18 @@ import {
 } from 'lucide-react-native';
 import Colors, { spacing, typography } from '@/constants/colors';
 import { useUser } from '@/contexts/UserContext';
+import { useRouter } from 'expo-router';
 
 export default function MoreScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const { userState } = useUser();
 
   const menuSections = [
     {
       title: 'Mon compte',
       items: [
-        { icon: User, label: 'Profil', subtitle: 'Gérer mon compte' },
+        { icon: User, label: 'Profil', subtitle: 'Gérer mon compte', route: '/profile' },
         { icon: Coins, label: 'Mes Coins', subtitle: `${userState.coinsBalance} Coins`, highlight: true },
         { icon: Gift, label: 'Obtenir des Coins', subtitle: 'Offres et bonus' },
       ],
@@ -40,7 +42,7 @@ export default function MoreScreen() {
       title: 'Préférences',
       items: [
         { icon: Bell, label: 'Notifications', subtitle: 'Paramètres des alertes' },
-        { icon: Settings, label: 'Paramètres', subtitle: 'App et lecture' },
+        { icon: Settings, label: 'Paramètres', subtitle: 'App et lecture', route: '/settings' },
       ],
     },
     {
@@ -80,7 +82,10 @@ export default function MoreScreen() {
             <Text style={styles.profileName}>Utilisateur WEBTOON</Text>
             <Text style={styles.profileEmail}>Se connecter pour plus de fonctionnalités</Text>
           </View>
-          <TouchableOpacity style={styles.loginButton}>
+          <TouchableOpacity 
+            style={styles.loginButton}
+            onPress={() => router.push('/login')}
+          >
             <Text style={styles.loginButtonText}>Connexion</Text>
           </TouchableOpacity>
         </View>
@@ -93,7 +98,10 @@ export default function MoreScreen() {
               <Text style={styles.coinsValue}>{userState.coinsBalance}</Text>
             </View>
           </View>
-          <TouchableOpacity style={styles.coinsButton}>
+          <TouchableOpacity 
+            style={styles.coinsButton}
+            onPress={() => console.log('Recharge coins')}
+          >
             <Text style={styles.coinsButtonText}>+ Recharger</Text>
           </TouchableOpacity>
         </View>
@@ -110,6 +118,13 @@ export default function MoreScreen() {
                     itemIndex < section.items.length - 1 && styles.menuItemBorder,
                   ]}
                   activeOpacity={0.6}
+                  onPress={() => {
+                    if ('route' in item && item.route) {
+                      router.push(item.route as any);
+                    } else {
+                      console.log('Menu item clicked:', item.label);
+                    }
+                  }}
                 >
                   <View style={[styles.menuIconContainer, item.highlight && styles.menuIconHighlight]}>
                     <item.icon size={20} color={item.highlight ? Colors.brand.green : Colors.text.secondary} />

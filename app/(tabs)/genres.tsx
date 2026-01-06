@@ -40,6 +40,7 @@ export default function GenresScreen() {
                 key={genre.id}
                 style={styles.genreCard}
                 activeOpacity={0.7}
+                onPress={() => router.push(`/genre/${genre.id}`)}
               >
                 <View style={styles.genreHeader}>
                   <View style={styles.genreIconContainer}>

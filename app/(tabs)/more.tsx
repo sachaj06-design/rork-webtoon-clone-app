@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { 
@@ -28,6 +29,46 @@ export default function MoreScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { userState } = useUser();
+
+  const handleMenuItemPress = (label: string) => {
+    switch (label) {
+      case 'Obtenir des Coins':
+        Alert.alert('Coins', 'Achetez des Coins pour débloquer des épisodes premium !');
+        break;
+      case 'Notifications':
+        Alert.alert('Notifications', 'Gérez vos préférences de notifications dans les paramètres.');
+        break;
+      case "Noter l'app":
+        Alert.alert('Merci !', 'Nous apprécions votre soutien. Redirection vers le store...');
+        break;
+      case 'Nous contacter':
+        Alert.alert(
+          'Nous contacter',
+          'Email: support@webtoon-clone.com\n\nNous répondons sous 24h !'
+        );
+        break;
+      case 'Aide':
+        Alert.alert(
+          'Aide',
+          'Consultez notre FAQ pour trouver des réponses aux questions fréquentes.'
+        );
+        break;
+      case 'Confidentialité':
+        Alert.alert(
+          'Politique de confidentialité',
+          'Nous respectons votre vie privée. Vos données sont sécurisées et jamais partagées avec des tiers.'
+        );
+        break;
+      case 'À propos':
+        Alert.alert('WEBTOON Clone', 'Version 2.0.0\n\n© 2026 Tous droits réservés');
+        break;
+      case 'Mes Coins':
+        Alert.alert('Mes Coins', `Vous avez ${userState.coinsBalance} Coins disponibles.`);
+        break;
+      default:
+        console.log('Menu item clicked:', label);
+    }
+  };
 
   const menuSections = [
     {
@@ -122,7 +163,7 @@ export default function MoreScreen() {
                     if ('route' in item && item.route) {
                       router.push(item.route as any);
                     } else {
-                      console.log('Menu item clicked:', item.label);
+                      handleMenuItemPress(item.label);
                     }
                   }}
                 >

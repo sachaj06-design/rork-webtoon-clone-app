@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Switch,
+  Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -18,6 +19,60 @@ export default function SettingsScreen() {
   const [autoPlay, setAutoPlay] = useState(false);
   const [notifications, setNotifications] = useState(true);
   const [dataMode, setDataMode] = useState(false);
+
+  const handleButtonPress = (label: string) => {
+    switch (label) {
+      case 'Qualité des images':
+        Alert.alert(
+          'Qualité des images',
+          'Sélectionnez la qualité d\'affichage',
+          [
+            { text: 'Basse', onPress: () => console.log('Basse') },
+            { text: 'Moyenne', onPress: () => console.log('Moyenne') },
+            { text: 'Haute', onPress: () => console.log('Haute'), style: 'default' },
+          ]
+        );
+        break;
+      case 'Nouveaux épisodes':
+        Alert.alert(
+          'Notifications des épisodes',
+          'Choisissez les séries pour lesquelles vous souhaitez recevoir des notifications.'
+        );
+        break;
+      case 'Langue':
+        Alert.alert(
+          'Langue',
+          'Sélectionnez votre langue',
+          [
+            { text: 'Français', onPress: () => console.log('Français'), style: 'default' },
+            { text: 'English', onPress: () => console.log('English') },
+            { text: 'Español', onPress: () => console.log('Español') },
+          ]
+        );
+        break;
+      case 'Thème':
+        Alert.alert(
+          'Thème',
+          'Sélectionnez le thème de l\'application',
+          [
+            { text: 'Clair', onPress: () => console.log('Clair'), style: 'default' },
+            { text: 'Sombre', onPress: () => console.log('Sombre') },
+            { text: 'Auto', onPress: () => console.log('Auto') },
+          ]
+        );
+        break;
+      case 'Effacer le cache':
+        Alert.alert(
+          'Effacer le cache',
+          'Êtes-vous sûr de vouloir effacer le cache ? Cela libérera de l\'espace de stockage.',
+          [
+            { text: 'Annuler', style: 'cancel' },
+            { text: 'Effacer', onPress: () => Alert.alert('Cache effacé', 'Le cache a été vidé avec succès.'), style: 'destructive' },
+          ]
+        );
+        break;
+    }
+  };
 
   const settingsSections = [
     {
@@ -132,7 +187,7 @@ export default function SettingsScreen() {
                       thumbColor={Colors.background.main}
                     />
                   ) : (
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleButtonPress(item.label)}>
                       <ChevronRight size={20} color={Colors.text.secondary} />
                     </TouchableOpacity>
                   )}
